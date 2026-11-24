@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // قواعد استقبال وإدارة الطلبات فورياً (Orders Collection)
+    match /orders/{orderId} {
+      // السماح بقراءة الطلبات لإدارتها في الداشبورد
+      allow read: if true;
+      
+      // السماح بإنشاء طلبات جديدة من العملاء وتحديث حالتها في لوحة التحكم
+      allow create, update: if true;
+      allow delete: if false; // حماية السجلات من الحذف العرضي
+    }
+
+    // قواعد المنتجات والكتالوج (Products Collection)
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // القواعد العامة
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

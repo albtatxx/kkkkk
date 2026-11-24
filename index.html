@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ميزون إيبيور | MAISON ÉPURE — متجر الأزياء الفاخرة ولوحة التحكم</title>
+  <meta name="description" content="أتيليه أزياء راقية ومينيمال. قصات معمارية، خامات طبيعية نقية، ودفع فوري آمن عبر فودافون كاش مع لوحة تحكم متكاملة للمتجر.">
+  
+  <!-- Favicon SVG -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' font-family='serif'>É</text></svg>">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Firebase App, Firestore, and Analytics SDKs (Compat version for universal browser support) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics-compat.js"></script>
+</head>
+<body class="mode-mockup">
+
+  <!-- Floating Presentation & Dashboard Switcher Bar -->
+  <aside class="presentation-bar" aria-label="أدوات التحكم السريع">
+    <button class="pres-btn active" onclick="showDashboard()" title="لوحة تحكم المتجر">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7"></rect>
+        <rect x="14" y="3" width="7" height="7"></rect>
+        <rect x="14" y="14" width="7" height="7"></rect>
+        <rect x="3" y="14" width="7" height="7"></rect>
+      </svg>
+      <span>لوحة التحكم (Dashboard)</span>
+    </button>
+
+    <div class="pres-divider"></div>
+
+    <button id="mockupToggleBtn" class="pres-btn" onclick="toggleMockupMode()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+        <line x1="8" y1="21" x2="16" y2="21"></line>
+        <line x1="12" y1="17" x2="12" y2="21"></line>
+      </svg>
+      <span class="pres-label" data-i18n="mockupToggleOff">عرض المتصفح الكامل</span>
+    </button>
+    
+    <div class="pres-divider"></div>
+    
+    <button class="pres-btn" onclick="toggleLanguage()" title="تبديل اللغة / Switch Language">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="2" y1="12" x2="22" y2="12"></line>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+      </svg>
+      <span class="lang-switch-btn">English</span>
+    </button>
+
+    <button class="pres-btn" onclick="cycleCurrency()" title="تبديل العملة">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="12" y1="1" x2="12" y2="23"></line>
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+      </svg>
+      <span class="curr-switch-btn">EGP (ج.م)</span>
+    </button>
+  </aside>
+
+  <!-- Presentation Viewport (Standard or Framed in Studio Mockup Chassis) -->
+  <div class="presentation-viewport">
+    
+    <!-- Desktop Studio Mockup Chassis (Active in Mockup Mode) -->
+    <div class="mockup-chassis">
+      
+      <!-- Studio Desktop Chrome / Top Mockup Header -->
+      <div class="mockup-chrome">
+        <div class="chrome-dots">
+          <span class="chrome-dot red"></span>
+          <span class="chrome-dot yellow"></span>
+          <span class="chrome-dot green"></span>
+        </div>
+        
+        <div class="chrome-url-bar">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span>https://maison-epure.eg/atelier-winter-26</span>
+        </div>
+
+        <div class="chrome-meta">
+          <span class="chrome-meta-badge">دفع فودافون كاش متاح</span>
+          <span>4K RETINA • FIGMA SHOWCASE</span>
+        </div>
+      </div>
+
+      <!-- Screen Frame Inner Container -->
+      <div class="mockup-screen-inner">
+
+        <!-- =================================================================
+             STOREFRONT VIEW (واجهة المتجر الرئيسية)
+             ================================================================= -->
+        <div id="storefrontView">
+
+          <!-- Announcement Top Bar -->
+          <div class="top-bar">
+            <div class="container top-bar-inner">
+              <div class="top-bar-notice">
+                <span class="notice-pill">فودافون كاش</span>
+                <span data-i18n="topNotice">شحن عالمي سريع ومجاني للطلبات فوق 350 دولار • أزياء مستدامة وفاخرة</span>
+              </div>
+              
+              <div class="top-bar-actions">
+                <button class="currency-switch" onclick="cycleCurrency()" aria-label="تغيير العملة">
+                  <span class="curr-switch-btn">ج.م (EGP)</span>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+                
+                <button class="lang-switch" onclick="toggleLanguage()" aria-label="Change Language">
+                  <span class="lang-switch-btn">English</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sticky Main Navigation Header -->
+          <header class="site-header">
+            <div class="container header-inner">
+              
+              <!-- Mobile Menu Toggle Button -->
+              <button class="action-btn mobile-nav-toggle" onclick="toggleMobileNav()" aria-label="فتح القائمة">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <line x1="3" y1="12" x2="21" y2="12"></line>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+              </button>
+
+              <!-- Desktop Navigation Links -->
+              <nav class="nav-desktop" aria-label="أقسام المتجر الرئيسية">
+                <a href="#trending" class="nav-link" data-i18n="navMen">رجالي</a>
+                <a href="#categories" class="nav-link" data-i18n="navWomen">نسائي</a>
+                <a href="#trending" class="nav-link" data-i18n="navNew">وصل حديثاً</a>
+                <a href="#lookbook" class="nav-link" data-i18n="navCollections">التشكيلات</a>
+                <a href="#trending" class="nav-link sale-tag" data-i18n="navSale">الأرشيف والتخفيضات</a>
+              </nav>
+
+              <!-- Minimalist Luxury Logo -->
+              <a href="#" class="site-logo">
+                <span class="logo-brand" data-i18n="brandName">ميزون إيبيور</span>
+                <span class="logo-sub" data-i18n="brandTag">أتيليه الأزياء الراقية والستريت وير المعاصر</span>
+              </a>
+
+              <!-- Header Utility Actions -->
+              <div class="header-actions">
+                <!-- Dashboard Direct Access Button -->
+                <button class="action-btn" onclick="showDashboard()" title="لوحة تحكم المتجر" style="background: var(--bg-subtle);">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                  </svg>
+                </button>
+
+                <!-- Live Search Button -->
+                <button class="action-btn" onclick="openSearch()" aria-label="بحث في التشكيلة">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </button>
+
+                <!-- Wishlist Button -->
+                <button class="action-btn" onclick="openWishlistDrawer()" aria-label="قائمة الرغبات">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                  <span class="action-badge wishlist-counter">3</span>
+                </button>
+
+                <!-- Shopping Bag with Counter -->
+                <button class="action-btn" onclick="openCartDrawer()" aria-label="حقيبة التسوق">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                  </svg>
+                  <span class="action-badge cart-counter">2</span>
+                </button>
+              </div>
+
+            </div>
+          </header>
+
+          <main>
+            <!-- =================================================================
+                 1. HERO SECTION (Full-Width Editorial Banner)
+                 ================================================================= -->
+            <section class="hero-section" aria-label="الحملة الإعلانية الموسمية">
+              <div class="hero-bg-media">
+                <img class="hero-bg-img" 
+                     src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=2400&q=88" 
+                     alt="عارضة أزياء ترتدي معطف كشمير شتوي محايد وفخم"
+                     loading="eager">
+                <div class="hero-overlay"></div>
+              </div>
+
+              <div class="container hero-content">
+                <span class="hero-tag" data-i18n="heroEyebrow">مجموعة خريف وشتاء 2026</span>
+                <h1 class="hero-title" data-i18n="heroTitle">أناقة الصمت والهيكل</h1>
+                <p class="hero-desc" data-i18n="heroDesc">
+                  دراسة عميقة في بساطة الملمس ونقاء التصميم. ألياف طبيعية نقية، أبعاد معمارية رصينة، وأزياء شوارع مينيمال مصممة لتدوم طويلاً.
+                </p>
+
+                <div class="hero-actions">
+                  <a href="#trending" class="btn-primary" data-i18n="heroShopBtn">
+                    <span>تسوق المجموعة الجديدة</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                      <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                  </a>
+                  
+                  <a href="#lookbook" class="btn-secondary" data-i18n="heroExploreBtn">
+                    <span>استعرض اللوك بوك</span>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Interactive Garment Tag Hotspot on Hero Model -->
+              <div class="hero-hotspot">
+                <button class="hotspot-trigger" onclick="openQuickView('ep-01')" aria-label="تفاصيل القطعة المعروضة">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="12" r="5"></circle>
+                  </svg>
+                </button>
+                
+                <div class="hotspot-card">
+                  <div class="hotspot-card-title" data-i18n="heroHotspotLabel">معطف كشمير فاخر مزدوج الأزرار</div>
+                  <div class="hotspot-card-price">29,000 ج.م • قصة حصرية</div>
+                  <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">اضغط لمعاينة القطعة</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- =================================================================
+                 2. FEATURED CATEGORIES (Clean 4-Column Grid)
+                 ================================================================= -->
+            <section id="categories" class="categories-section">
+              <div class="container">
+                
+                <div class="section-header">
+                  <div>
+                    <span class="eyebrow-text">التشكيلات المختارة</span>
+                    <h2 class="section-title" data-i18n="catTitle">التصنيفات المختارة</h2>
+                    <p class="section-subtext" data-i18n="catSub">قصات هندسية نقية صُممت لتمنح إطلالتك اليومية تميزاً استثنائياً.</p>
+                  </div>
+                  
+                  <a href="#trending" class="section-link" onclick="resetFilters()">
+                    <span data-i18n="catViewAll">استكشف التشكيلة</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                      <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                  </a>
+                </div>
+
+                <div class="categories-grid">
+                  <!-- Category 1: Outerwear -->
+                  <a href="#trending" class="category-card" onclick="setCategoryFilter('outerwear')">
+                    <img class="category-img" 
+                         src="https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1000&q=80" 
+                         alt="المعاطف والسترات" loading="lazy">
+                    <div class="category-overlay"></div>
+                    <div class="category-content">
+                      <span class="category-count">14 تصميماً</span>
+                      <h3 class="category-title" data-i18n="cat1">المعاطف والسترات</h3>
+                      <span class="category-action">
+                        <span>استكشف</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                          <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                      </span>
+                    </div>
+                  </a>
+
+                  <!-- Category 2: Everyday Essentials -->
+                  <a href="#trending" class="category-card" onclick="setCategoryFilter('essentials')">
+                    <img class="category-img" 
+                         src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1000&q=80" 
+                         alt="الأساسيات الفاخرة" loading="lazy">
+                    <div class="category-overlay"></div>
+                    <div class="category-content">
+                      <span class="category-count">22 قطعة</span>
+                      <h3 class="category-title" data-i18n="cat2">الأساسيات الفاخرة</h3>
+                      <span class="category-action">
+                        <span>استكشف</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                          <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                      </span>
+                    </div>
+                  </a>
+
+                  <!-- Category 3: Knitwear & Trousers -->
+                  <a href="#trending" class="category-card" onclick="setCategoryFilter('trousers')">
+                    <img class="category-img" 
+                         src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1000&q=80" 
+                         alt="التريكو والبناطيل" loading="lazy">
+                    <div class="category-overlay"></div>
+                    <div class="category-content">
+                      <span class="category-count">18 قطعة</span>
+                      <h3 class="category-title" data-i18n="cat3">التريكو والبناطيل</h3>
+                      <span class="category-action">
+                        <span>استكشف</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                          <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                      </span>
+                    </div>
+                  </a>
+
+                  <!-- Category 4: Footwear & Accessories -->
+                  <a href="#trending" class="category-card" onclick="setCategoryFilter('accessories')">
+                    <img class="category-img" 
+                         src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1000&q=80" 
+                         alt="الأحذية والجلديات" loading="lazy">
+                    <div class="category-overlay"></div>
+                    <div class="category-content">
+                      <span class="category-count">09 تصاميم</span>
+                      <h3 class="category-title" data-i18n="cat4">الأحذية والجلديات</h3>
+                      <span class="category-action">
+                        <span>استكشف</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                          <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                      </span>
+                    </div>
+                  </a>
+                </div>
+
+              </div>
+            </section>
+
+            <!-- =================================================================
+                 3. TRENDING PRODUCTS & 4-COLUMN PRODUCT GRID
+                 ================================================================= -->
+            <section id="trending" class="products-section">
+              <div class="container">
+                
+                <div class="section-header">
+                  <div>
+                    <span class="eyebrow-text">الموسم الجديد</span>
+                    <h2 class="section-title" data-i18n="trendTitle">الأكثر رواجاً الآن</h2>
+                    <p class="section-subtext" data-i18n="trendSub">قطع أيقونية محبوكة من أنقى أنواع الصوف، الحرير الطبيعي، والكتان المعتق.</p>
+                  </div>
+                </div>
+
+                <!-- Filter Toolbar (Category & Sorting) -->
+                <div class="filter-toolbar">
+                  <div class="filter-pills" role="tablist">
+                    <button class="filter-pill active" data-category="all" onclick="setCategoryFilter('all', this)" data-i18n="filterAll">جميع القطع</button>
+                    <button class="filter-pill" data-category="outerwear" onclick="setCategoryFilter('outerwear', this)" data-i18n="filterOuterwear">المعاطف</button>
+                    <button class="filter-pill" data-category="essentials" onclick="setCategoryFilter('essentials', this)" data-i18n="filterEssentials">الأساسيات</button>
+                    <button class="filter-pill" data-category="knitwear" onclick="setCategoryFilter('knitwear', this)" data-i18n="filterKnitwear">التريكو</button>
+                    <button class="filter-pill" data-category="trousers" onclick="setCategoryFilter('trousers', this)" data-i18n="filterTrousers">البناطيل</button>
+                    <button class="filter-pill" data-category="accessories" onclick="setCategoryFilter('accessories', this)" data-i18n="filterAccessories">الإكسسوارات</button>
+                  </div>
+
+                  <div class="filter-controls-right">
+                    <select id="sortSelect" class="sort-select" aria-label="ترتيب المنتجات">
+                      <option value="featured" data-i18n="sortLabel">ترتيب حسب: المميز</option>
+                      <option value="price-asc" data-i18n="sortPriceAsc">السعر: من الأقل للأعلى</option>
+                      <option value="price-desc" data-i18n="sortPriceDesc">السعر: من الأعلى للأقل</option>
+                      <option value="rating" data-i18n="sortRating">الأعلى تقييماً</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Dynamic 4-Column Product Grid -->
+                <div id="productsGrid" class="products-grid">
+                  <!-- Injected via app.js -->
+                </div>
+
+              </div>
+            </section>
+
+            <!-- =================================================================
+                 4. EDITORIAL LOOKBOOK / BRAND STORY (Asymmetric Split Screen)
+                 ================================================================= -->
+            <section id="lookbook" class="lookbook-section">
+              <div class="container">
+                <div class="lookbook-grid">
+                  
+                  <!-- Editorial Image Composition -->
+                  <div class="lookbook-media">
+                    <img class="lookbook-img-large" 
+                         src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1400&q=85" 
+                         alt="اللوك بوك التحريري - الإصدار الرابع" loading="lazy">
+                    
+                    <div class="lookbook-float-card">
+                      <span class="eyebrow-text">انضباط الملمس</span>
+                      <h3 class="float-card-caption">هندسة الأقمشة الطبيعية</h3>
+                      <p class="float-card-sub">صوف بكر إيطالي مزدوج البرم، بقصة أكتاف منسدلة وأزرار قرن طبيعية فريدة.</p>
+                    </div>
+                  </div>
+
+                  <!-- Editorial Content & Brand Philosophy -->
+                  <div class="lookbook-content">
+                    <div>
+                      <span class="eyebrow-text" data-i18n="lookbookTitle">الإصدار الرابع: أرشيف الملمس الحقيقي</span>
+                      <h2 class="lookbook-manifesto" data-i18n="lookbookManifesto">
+                        الفخامة ليست بهرجة زائدة، بل ثقة هادئة بجوهر الخامة.
+                      </h2>
+                    </div>
+
+                    <div class="lookbook-body">
+                      <p data-i18n="lookbookBody1">
+                        كل قطعة في ميزون إيبيور تُصاغ باقتصاد بصري متعمد. نستبعد الزخارف العشوائية لنبرز فخامة الكتان البلجيكي، ودفء الكشمير المنغولي، وانسيابية البنطال ذي الثنيات المتقنة.
+                      </p>
+                      <p data-i18n="lookbookBody2">
+                        صُنعت يدوياً بكميات محدودة في ورش عريقة في بييلا وفلورنسا وكيوتو لتتجاوز تقلبات المواسم وتبقى إرثاً أصيلاً.
+                      </p>
+                    </div>
+
+                    <!-- Editorial Specifications -->
+                    <div class="lookbook-specs">
+                      <div>
+                        <div class="spec-item-title" data-i18n="spec1Title">مصدر الخامات</div>
+                        <div class="spec-item-desc" data-i18n="spec1Desc">100% كشمير وصوف بكر موثق المصدر</div>
+                      </div>
+                      <div>
+                        <div class="spec-item-title" data-i18n="spec2Title">معايير الخياطة</div>
+                        <div class="spec-item-desc" data-i18n="spec2Desc">هيكل كانفاس كامل وخياطة بليك إيطالية</div>
+                      </div>
+                      <div>
+                        <div class="spec-item-title" data-i18n="spec3Title">الاستدامة البيئية</div>
+                        <div class="spec-item-desc" data-i18n="spec3Desc">ألياف حاصلة على اعتمادات GOTS العالمية</div>
+                      </div>
+                      <div>
+                        <div class="spec-item-title" data-i18n="spec4Title">طريقة الإنتاج</div>
+                        <div class="spec-item-desc" data-i18n="spec4Desc">دفعات تصنيع حصرية بدون هدر أو فائض</div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <button class="btn-primary" onclick="showToast('جاري فتح بيان الأتيليه الكامل...')" data-i18n="lookbookBtn">
+                        <span>قراءة بيان العلامة الكامل</span>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                          <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                      </button>
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+            </section>
+
+            <!-- =================================================================
+                 5. CRAFTSMANSHIP & VALUES STRIP
+                 ================================================================= -->
+            <section class="values-strip" aria-label="التزامات ميزون إيبيور">
+              <div class="container">
+                <div class="values-grid">
+                  
+                  <div class="value-card">
+                    <div class="value-icon">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                      </svg>
+                    </div>
+                    <h3 class="value-title" data-i18n="val1Title">خامات أصيلة ومستدامة</h3>
+                    <p class="value-desc" data-i18n="val1Desc">ألياف طبيعية نقية وموثوقة المصدر من مزارع بيئية مسؤولة.</p>
+                  </div>
+
+                  <div class="value-card">
+                    <div class="value-icon">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                      </svg>
+                    </div>
+                    <h3 class="value-title" data-i18n="val2Title">تشطيب يدوي متقن</h3>
+                    <p class="value-desc" data-i18n="val2Desc">أزرار قرن طبيعية، درزات فرنسية مخفية وتشطيب يدوي دقيق.</p>
+                  </div>
+
+                  <div class="value-card">
+                    <div class="value-icon" style="color: var(--vodafone-red); background: var(--vodafone-bg);">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                        <path d="M7 15h0M2 9.5h20"></path>
+                      </svg>
+                    </div>
+                    <h3 class="value-title">دفع فوري بفودافون كاش</h3>
+                    <p class="value-desc">تأكيد تحويلات فودافون كاش ومحافظ المحمول المصرية خلال دقائق معدودة.</p>
+                  </div>
+
+                  <div class="value-card">
+                    <div class="value-icon">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                      </svg>
+                    </div>
+                    <h3 class="value-title" data-i18n="val4Title">تعهد صيانة مدى الحياة</h3>
+                    <p class="value-desc" data-i18n="val4Desc">خدمة ترميم وصيانة مجانية للمعاطف والمنتجات الجلدية.</p>
+                  </div>
+
+                </div>
+              </div>
+            </section>
+
+          </main>
+
+          <!-- =================================================================
+               6. FOOTER
+               ================================================================= -->
+          <footer class="site-footer">
+            <div class="container">
+              
+              <div class="footer-top">
+                
+                <!-- Brand Identity Column & Newsletter -->
+                <div class="footer-brand-col">
+                  <h3 class="footer-brand-title" data-i18n="brandName">ميزون إيبيور</h3>
+                  <p class="footer-brand-desc" data-i18n="footerBrandDesc">
+                    ميزون إيبيور دار أزياء فاخرة معاصرة ترتكز على نقاء الخامات، والقصات الهندسية، وفلسفة المينيماليزم الخالدة.
+                  </p>
+                  
+                  <div>
+                    <h4 class="footer-col-title" style="margin-bottom: 0.5rem;" data-i18n="newsletterTitle">نشرة الأتيليه الخاصة</h4>
+                    <p style="font-size: 0.8rem; color: #9C958A; margin-bottom: 0.75rem;" data-i18n="newsletterDesc">
+                      احصل على دعوات حصرية لإطلاق المجموعات المحدودة وعروض الأرشيف الخاصة.
+                    </p>
+                    
+                    <form id="newsletterForm" class="newsletter-form">
+                      <input type="email" class="newsletter-input" placeholder="أدخل بريدك الإلكتروني..." data-i18n-placeholder="newsletterPlaceholder" required>
+                      <button type="submit" class="newsletter-btn" data-i18n="newsletterBtn">اشتراك</button>
+                    </form>
+                  </div>
+                </div>
+
+                <!-- Shop Links -->
+                <div>
+                  <h4 class="footer-col-title" data-i18n="footerColShop">التشكيلات</h4>
+                  <ul class="footer-links">
+                    <li><a href="#trending" class="footer-link" onclick="setCategoryFilter('outerwear')" data-i18n="filterOuterwear">المعاطف</a></li>
+                    <li><a href="#trending" class="footer-link" onclick="setCategoryFilter('essentials')" data-i18n="filterEssentials">الأساسيات</a></li>
+                    <li><a href="#trending" class="footer-link" onclick="setCategoryFilter('knitwear')" data-i18n="filterKnitwear">التريكو</a></li>
+                    <li><a href="#trending" class="footer-link" onclick="setCategoryFilter('trousers')" data-i18n="filterTrousers">البناطيل</a></li>
+                    <li><a href="#trending" class="footer-link" onclick="setCategoryFilter('accessories')" data-i18n="filterAccessories">الإكسسوارات</a></li>
+                    <li><a href="#trending" class="footer-link" data-i18n="navSale">الأرشيف والتخفيضات</a></li>
+                  </ul>
+                </div>
+
+                <!-- Client Care -->
+                <div>
+                  <h4 class="footer-col-title" data-i18n="footerColCare">خدمة العملاء</h4>
+                  <ul class="footer-links">
+                    <li><a href="#" class="footer-link" onclick="showToast('توصيل سريع لكافة محافظات مصر')" data-i18n="footerShipping">الشحن والاسترجاع</a></li>
+                    <li><a href="#" class="footer-link" onclick="showToast('محفظة فودافون كاش المعتمدة: 01092837465')">طرق الدفع وفودافون كاش</a></li>
+                    <li><a href="#" class="footer-link" onclick="showToast('حجز موعد بالأستوديو في القاهرة')">زيارة الأتيليه</a></li>
+                    <li><a href="#" class="footer-link" onclick="showDashboard()" style="color: var(--accent-terracotta); font-weight: 600;">لوحة إدارة المتجر (Admin)</a></li>
+                  </ul>
+                </div>
+
+                <!-- Legal & Socials -->
+                <div>
+                  <h4 class="footer-col-title" data-i18n="footerColLegal">القانونية والأخلاقيات</h4>
+                  <ul class="footer-links">
+                    <li><a href="#" class="footer-link" data-i18n="footerTerms">الشروط والأحكام</a></li>
+                    <li><a href="#" class="footer-link" data-i18n="footerPrivacy">سياسة الخصوصية</a></li>
+                  </ul>
+                  
+                  <div style="margin-top: 1.75rem;">
+                    <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: #FAF9F6; display: block; margin-bottom: 0.75rem;">تابع حسابات الأتيليه</span>
+                    <div class="footer-socials">
+                      <a href="https://instagram.com" target="_blank" rel="noreferrer" class="social-link" aria-label="Instagram">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                      </a>
+                      <a href="https://pinterest.com" target="_blank" rel="noreferrer" class="social-link" aria-label="Pinterest">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                          <line x1="12" y1="2" x2="12" y2="22"></line>
+                          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                      </a>
+                      <a href="https://behance.net" target="_blank" rel="noreferrer" class="social-link" aria-label="Behance">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <path d="M8 12h8"></path>
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Footer Bottom Bar -->
+              <div class="footer-bottom">
+                <span data-i18n="footerRights">© 2026 ميزون إيبيور أتيليه. جميع الحقوق محفوظة.</span>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                  <span>القاهرة • الإسكندرية • دبي • باريس</span>
+                  <span>•</span>
+                  <span style="color: var(--vodafone-red); font-weight: 600;">مدعوم بنظام فودافون كاش التجاري</span>
+                </div>
+              </div>
+
+            </div>
+          </footer>
+
+        </div> <!-- /storefrontView -->
+
+
+        <!-- =================================================================
+             STORE DASHBOARD VIEW (لوحة تحكم المتجر المتكاملة)
+             ================================================================= -->
+        <div id="dashboardView">
+
+          <!-- Dashboard Header -->
+          <div class="dash-header-bar">
+            <div class="dash-brand-wrap">
+              <span class="logo-brand" style="font-size: 1.5rem;">ميزون إيبيور</span>
+              <span class="dash-badge">لوحة التحكم الإدارية</span>
+              <span class="vodafone-popular-tag">بوابة فودافون كاش مفعّلة</span>
+              <span id="firebaseStatusBadge" class="status-pill delivered" style="font-size: 0.72rem; gap: 5px; background: rgba(30, 126, 52, 0.08); color: #1E7E34; border: 1px solid rgba(30, 126, 52, 0.2);">
+                <span style="width: 7px; height: 7px; border-radius: 50%; background: #27C93F; display: inline-block;"></span>
+                <span id="firebaseStatusText">Firebase متصل (مشروع: mmmm-e9205)</span>
+              </span>
+            </div>
+
+            <div class="dash-actions-group">
+              <button id="btnSoundAlertToggle" class="btn-notification-toggle active" onclick="toggleOrderSoundNotifications()" title="صوت الإشعارات والتنبيه الفوري">
+                <span class="live-pulse-dot"></span>
+                <span id="soundAlertText">استقبال مباشر (صوت + إشعارات)</span>
+              </button>
+
+              <button class="btn-dash-back" onclick="triggerTestLiveOrder()" title="تجربة محاكاة وصول طلب فوري">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span>تجربة طلب فوري</span>
+              </button>
+
+              <button class="btn-dash-back" onclick="openAddProductModal()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>إضافة قطعة جديدة</span>
+              </button>
+
+              <button class="btn-dash-back" onclick="showStorefront()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>العودة للمتجر</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="dashboard-container">
+
+            <!-- Urgent Live Order Incoming Alert Banner -->
+            <div id="urgentOrderBanner" class="urgent-order-banner">
+              <div class="urgent-banner-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+              </div>
+              <div class="urgent-banner-info">
+                <div class="urgent-banner-title">
+                  <span>🔔 وصل الآن طلب فودافون كاش جديد!</span>
+                  <span id="urgentOrderBadge" class="vodafone-logo-badge">#EPU-NEW</span>
+                </div>
+                <div id="urgentOrderSub" class="urgent-banner-sub">
+                  العميل: سارة الشاذلي • المبلغ: 18,500 ج.م • كود العملية: VF-981240
+                </div>
+              </div>
+              <div class="urgent-banner-actions">
+                <button id="btnUrgentApprove" class="btn-table-action btn-approve-vodafone" onclick="approveUrgentOrder()">
+                  تأكيد استلام كاش فوراً
+                </button>
+                <button class="btn-table-action btn-table-view" onclick="closeUrgentOrderBanner()">
+                  إغلاق
+                </button>
+              </div>
+            </div>
+
+            <!-- Dashboard Sub-Tabs -->
+            <div class="dash-nav-tabs">
+              <button class="dash-tab-btn active" data-tab="overview" onclick="switchDashTab('overview')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span>نظرة عامة والتحليلات</span>
+              </button>
+
+              <button class="dash-tab-btn" data-tab="orders" onclick="switchDashTab('orders')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                <span>إدارة الطلبات وفودافون كاش</span>
+                <span id="dashTabVfBadge" class="dash-tab-badge">1</span>
+              </button>
+
+              <button class="dash-tab-btn" data-tab="products" onclick="switchDashTab('products')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                <span>المنتجات والمخزون</span>
+              </button>
+
+              <button class="dash-tab-btn" data-tab="customers" onclick="switchDashTab('customers')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span>العملاء</span>
+              </button>
+
+              <button class="dash-tab-btn" data-tab="settings" onclick="switchDashTab('settings')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span>إعدادات محفظة فودافون كاش</span>
+              </button>
+            </div>
+
+            <!-- Tab 1: Overview -->
+            <div id="dashTabOverview">
+              <!-- Metric Cards -->
+              <div class="dash-metrics-grid">
+                <div class="dash-metric-card">
+                  <span class="metric-label">إجمالي مبيعات المتجر</span>
+                  <div class="metric-value" id="dashTotalSales">94,500 ج.م</div>
+                  <span class="metric-trend">↑ 24% مقارنة بالشهر السابق</span>
+                </div>
+
+                <div class="dash-metric-card">
+                  <span class="metric-label">عدد الطلبات المسجلة</span>
+                  <div class="metric-value" id="dashTotalOrders">4</div>
+                  <span class="metric-trend">معدل تحويل مرتفع (4.8%)</span>
+                </div>
+
+                <div class="dash-metric-card highlight-vodafone">
+                  <span class="metric-label" style="color: var(--vodafone-red); font-weight: 700;">تحويلات فودافون كاش بانتظار التأكيد</span>
+                  <div class="metric-value" id="dashVfPendingCount" style="color: var(--vodafone-red);">1</div>
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">تحتاج مراجعة كود العملية وتأكيد الاستلام</span>
+                </div>
+
+                <div class="dash-metric-card">
+                  <span class="metric-label">القطع المعروضة بالأرشيف</span>
+                  <div class="metric-value" id="dashTotalProducts">8</div>
+                  <span class="metric-trend">جاهزة للشحن الفوري</span>
+                </div>
+              </div>
+
+              <!-- Quick Orders Panel in Overview -->
+              <div class="dash-panel">
+                <div class="dash-panel-header">
+                  <h3 class="dash-panel-title">
+                    <span>أحدث الطلبات والتحويلات</span>
+                  </h3>
+                  <button class="btn-table-action btn-table-view" onclick="switchDashTab('orders')">عرض جميع الطلبات ←</button>
+                </div>
+                
+                <div class="dash-table-wrap">
+                  <table class="dash-table">
+                    <thead>
+                      <tr>
+                        <th>رقم الطلب</th>
+                        <th>العميل</th>
+                        <th>القطع والمقاسات</th>
+                        <th>المبلغ الإجمالي</th>
+                        <th>طريقة الدفع</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dashOrdersTableBody">
+                      <!-- Populated via app.js -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 2: Orders & Vodafone Cash -->
+            <div id="dashTabOrders" style="display: none;">
+              <div class="dash-panel">
+                <div class="dash-panel-header">
+                  <h3 class="dash-panel-title">
+                    <span>سجل الطلبات ومطابقة تحويلات فودافون كاش</span>
+                  </h3>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">
+                    يتم إدراج أي تحويل كاش جديد فور قيام العميل بالطلب
+                  </div>
+                </div>
+
+                <div class="dash-table-wrap">
+                  <table class="dash-table">
+                    <thead>
+                      <tr>
+                        <th>رقم الطلب</th>
+                        <th>العميل</th>
+                        <th>القطع والمقاسات</th>
+                        <th>المبلغ الإجمالي</th>
+                        <th>طريقة الدفع</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dashOrdersTableBody2">
+                      <!-- Populated via app.js -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 3: Products Catalog -->
+            <div id="dashTabProducts" style="display: none;">
+              <div class="dash-panel">
+                <div class="dash-panel-header">
+                  <h3 class="dash-panel-title">
+                    <span>إدارة تشكيلة المنتجات والمخزون</span>
+                  </h3>
+                  <button class="btn-primary" onclick="openAddProductModal()" style="padding: 8px 16px; font-size: 0.82rem;">+ إضافة منتج جديد</button>
+                </div>
+
+                <div class="dash-table-wrap">
+                  <table class="dash-table">
+                    <thead>
+                      <tr>
+                        <th>الصورة</th>
+                        <th>اسم القطعة والتصنيف</th>
+                        <th>السعر</th>
+                        <th>المقاسات المتوفرة</th>
+                        <th>حالة المخزون</th>
+                        <th>إجراءات</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dashProductsTableBody">
+                      <!-- Populated via app.js -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 4: Customers -->
+            <div id="dashTabCustomers" style="display: none;">
+              <div class="dash-panel">
+                <div class="dash-panel-header">
+                  <h3 class="dash-panel-title">
+                    <span>سجل العملاء والمشترين</span>
+                  </h3>
+                </div>
+
+                <div class="dash-table-wrap">
+                  <table class="dash-table">
+                    <thead>
+                      <tr>
+                        <th>اسم العميل والبريد</th>
+                        <th>رقم الهاتف</th>
+                        <th>المدينة</th>
+                        <th>الطلبات السابقة</th>
+                        <th>إجمالي المشتريات</th>
+                        <th>تصنيف العميل</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dashCustomersTableBody">
+                      <!-- Populated via app.js -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 5: Wallet Settings -->
+            <div id="dashTabSettings" style="display: none;">
+              <div class="dash-panel" style="max-width: 680px;">
+                <div class="dash-panel-header">
+                  <h3 class="dash-panel-title">
+                    <span>إعدادات محفظة فودافون كاش للمتجر</span>
+                  </h3>
+                </div>
+
+                <form onsubmit="saveWalletSettings(event)" style="padding: 1.75rem; display: flex; flex-direction: column; gap: 1.25rem;">
+                  <div class="checkout-field">
+                    <label class="checkout-label">رقم محفظة فودافون كاش الخاصة بالمتجر (التي يحول إليها العملاء):</label>
+                    <input type="text" id="settingsWalletNumber" class="checkout-input" value="01092837465" required>
+                  </div>
+
+                  <div class="checkout-field">
+                    <label class="checkout-label">اسم صاحب المحفظة المسجل لدى فودافون:</label>
+                    <input type="text" id="settingsWalletOwner" class="checkout-input" value="ميزون إيبيور للأزياء الراقية" required>
+                  </div>
+
+                  <div class="checkout-field">
+                    <label class="checkout-label">كود التحويل السريع للعملاء (USSD):</label>
+                    <input type="text" class="checkout-input" value="*9*7*الرقم*المبلغ#" readonly style="background: var(--bg-subtle);">
+                  </div>
+
+                  <button type="submit" class="btn-primary" style="align-self: flex-start; padding: 10px 24px;">حفظ التغييرات</button>
+                </form>
+              </div>
+
+              <!-- Firebase Connection Status Card -->
+              <div class="dash-panel" style="max-width: 680px; margin-top: 1.5rem;">
+                <div class="dash-panel-header">
+                  <h3 class="dash-panel-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#FFA000"><path d="M12 2L3 19h18L12 2z"></path></svg>
+                    <span>بيانات وحالة ربط Google Firebase</span>
+                  </h3>
+                  <span class="status-pill delivered" id="fbConnectionStatusBadge">متصل ومزامَن</span>
+                </div>
+                <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 0.85rem; font-size: 0.85rem;">
+                  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-hairline); padding-bottom: 8px;">
+                    <span style="color: var(--text-muted);">معرّف المشروع (Project ID):</span>
+                    <strong style="font-family: monospace;">mmmm-e9205</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-hairline); padding-bottom: 8px;">
+                    <span style="color: var(--text-muted);">قاعدة البيانات الحية (Firestore):</span>
+                    <span style="color: var(--accent-olive); font-weight: 600;">Cloud Firestore (مزامنة فورية للطلبات والمنتجات)</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-hairline); padding-bottom: 8px;">
+                    <span style="color: var(--text-muted);">التخزين السحابي (Storage Bucket):</span>
+                    <span style="font-family: monospace; font-size: 0.8rem;">mmmm-e9205.firebasestorage.app</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-hairline); padding-bottom: 8px;">
+                    <span style="color: var(--text-muted);">رمز التحليلات (Measurement ID):</span>
+                    <strong style="font-family: monospace;">G-H9JFSYFV34</strong>
+                  </div>
+                  <div style="margin-top: 0.5rem; display: flex; gap: 10px;">
+                    <button type="button" class="btn-dash-back" onclick="testFirebaseConnection()" style="font-size: 0.8rem;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                      <span>فحص ومزامنة البيانات مع Firebase الآن</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div> <!-- /dashboardView -->
+
+      </div> <!-- /mockup-screen-inner -->
+    </div> <!-- /mockup-chassis -->
+
+  </div> <!-- /presentation-viewport -->
+
+  <!-- =================================================================
+       SLIDE-OVER CART DRAWER
+       ================================================================= -->
+  <div id="cartDrawerBackdrop" class="drawer-backdrop" onclick="closeCartDrawer()"></div>
+  
+  <aside id="cartDrawer" class="cart-drawer" aria-label="حقيبة التسوق">
+    <!-- Header -->
+    <div class="drawer-header">
+      <h3 class="drawer-title">
+        <span data-i18n="cartTitle">حقيبة التسوق الخاصة بك</span>
+        <span style="font-size: 0.9rem; color: var(--text-muted); font-family: var(--font-sans);" class="cart-counter">(2)</span>
+      </h3>
+      <button class="drawer-close" onclick="closeCartDrawer()" aria-label="إغلاق حقيبة التسوق">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Free Shipping Progress Banner -->
+    <div class="shipping-progress-banner">
+      <div id="shippingProgressText" class="progress-text">
+        أضف ما قيمته 2,500 ج.م للحصول على شحن سريع مجاني
+      </div>
+      <div class="progress-track">
+        <div id="shippingProgressFill" class="progress-fill" style="width: 78%;"></div>
+      </div>
+    </div>
+
+    <!-- Cart Items Scrollable Body -->
+    <div id="cartItemsBody" class="cart-items-body">
+      <!-- Items dynamically populated via app.js -->
+    </div>
+
+    <!-- Cart Footer & Checkout -->
+    <div class="drawer-footer">
+      <!-- Promo code input -->
+      <form id="cartPromoForm" class="promo-form">
+        <input type="text" id="cartPromoInput" class="promo-input" placeholder="رمز الخصم (جرب 'ÉPURE15')" data-i18n-placeholder="promoPlaceholder">
+        <button type="submit" class="promo-btn" data-i18n="promoApply">تطبيق</button>
+      </form>
+
+      <!-- Totals breakdown -->
+      <div class="cart-summary-line">
+        <span data-i18n="subtotal">المجموع الفرعي</span>
+        <span id="cartSubtotal">43,500 ج.م</span>
+      </div>
+      
+      <div id="cartDiscountRow" class="cart-summary-line" style="display: none; color: var(--accent-terracotta);">
+        <span data-i18n="discount">خصم الرمز الترويجي</span>
+        <span id="cartDiscount">-0 ج.م</span>
+      </div>
+
+      <div class="cart-summary-line">
+        <span data-i18n="shipping">الشحن السريع</span>
+        <span id="cartShipping" style="color: var(--accent-olive);" data-i18n="shippingFree">مجاني</span>
+      </div>
+
+      <div class="cart-summary-total">
+        <span data-i18n="total">المجموع الكلي</span>
+        <span id="cartTotal">43,500 ج.م</span>
+      </div>
+
+      <!-- Checkout Button opening Vodafone Cash Gateway -->
+      <button class="btn-checkout" onclick="triggerDrawerCheckout()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>متابعة الدفع (فودافون كاش متاح)</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- =================================================================
+       VODAFONE CASH CHECKOUT MODAL (بوابة الدفع بفودافون كاش)
+       ================================================================= -->
+  <div id="checkoutModal" class="checkout-modal" onclick="if(event.target === this) closeCheckoutModal()">
+    <div class="checkout-card">
+      <div class="checkout-card-header">
+        <h3 class="checkout-card-title">إتمام الطلب والدفع الآمن</h3>
+        <button class="drawer-close" onclick="closeCheckoutModal()" aria-label="إغلاق">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="checkoutForm" onsubmit="handleCheckoutSubmit(event)" class="checkout-card-body">
+        
+        <!-- Recipient Information -->
+        <div>
+          <h4 class="form-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>بيانات الشحن والتوصيل</span>
+          </h4>
+          
+          <div class="form-grid-2">
+            <div class="checkout-field">
+              <label class="checkout-label">الاسم بالكامل:</label>
+              <input type="text" id="checkoutName" class="checkout-input" placeholder="مثال: أحمد عبد الله" required>
+            </div>
+            
+            <div class="checkout-field">
+              <label class="checkout-label">رقم الهاتف (للتواصل والشحن):</label>
+              <input type="tel" id="checkoutPhone" class="checkout-input" placeholder="010xxxxxxxx" required>
+            </div>
+          </div>
+
+          <div class="checkout-field" style="margin-top: 10px;">
+            <label class="checkout-label">عنوان التوصيل بالتفصيل (المحافظة والمدينة والشارع):</label>
+            <input type="text" id="checkoutAddress" class="checkout-input" placeholder="مثال: القاهرة، التجمع الخامس، شارع التسعين، فيلا 12" required>
+          </div>
+        </div>
+
+        <!-- Payment Method Selection -->
+        <div>
+          <h4 class="form-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+            <span>طريقة الدفع</span>
+          </h4>
+
+          <div class="payment-methods-grid">
+            
+            <!-- Option 1: Vodafone Cash (Default & Highlighted) -->
+            <div class="payment-option-card vodafone-card active" data-method="vodafone_cash" onclick="selectPaymentMethod('vodafone_cash')">
+              <div class="payment-option-header">
+                <span class="vodafone-logo-badge">فودافون كاش</span>
+                <span class="vodafone-popular-tag">الأسرع في مصر</span>
+              </div>
+              <span class="payment-name">محفظة فودافون كاش</span>
+              <span class="payment-desc">تحويل فوري بدون رسوم إضافية وتأكيد تلقائي</span>
+            </div>
+
+            <!-- Option 2: Credit / Debit Card -->
+            <div class="payment-option-card" data-method="card" onclick="selectPaymentMethod('card')">
+              <div class="payment-option-header">
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">Visa / Mastercard</span>
+              </div>
+              <span class="payment-name">بطاقة بنكية / فيزا</span>
+              <span class="payment-desc">دفع مشفر وآمن عبر بوابات البنوك</span>
+            </div>
+
+            <!-- Option 3: COD -->
+            <div class="payment-option-card" data-method="cod" onclick="selectPaymentMethod('cod')">
+              <div class="payment-option-header">
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">الدفع نقداً</span>
+              </div>
+              <span class="payment-name">الدفع عند الاستلام</span>
+              <span class="payment-desc">سداد القيمة نقداً لمندوب الشحن عند المعاينة</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Vodafone Cash Specific Details Box -->
+        <div id="vodafoneDetailsPanel" class="vodafone-checkout-panel">
+          <div class="vodafone-panel-head">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+            <span>بيانات تحويل فودافون كاش:</span>
+          </div>
+
+          <div class="vodafone-wallet-box">
+            <div>
+              <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 2px;">رقم محفظة الأتيليه الرسمية:</div>
+              <div id="vfWalletDisplay" class="wallet-number-display">01092837465</div>
+              <div id="vfWalletOwnerDisplay" style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 2px;">ميزون إيبيور (Maison Épure Egypt)</div>
+            </div>
+
+            <button type="button" class="btn-copy-wallet" onclick="copyVodafoneWallet()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>نسخ الرقم</span>
+            </button>
+          </div>
+
+          <ol class="vodafone-steps-list">
+            <li>قم بتحويل المبلغ الإجمالي المطلوب: <strong id="checkoutPayAmount" style="color: var(--vodafone-red); font-size: 1rem;">43,500 ج.م</strong> إلى رقم المحفظة أعلاه.</li>
+            <li>يمكنك التحويل بطلب كود: <code style="direction: ltr; display: inline-block; background: #eee; padding: 2px 6px; border-radius: 3px;">*9*7*01092837465*المبلغ#</code> أو مباشرة عبر تطبيق <strong>أنا فودافون</strong>.</li>
+            <li>بعد إتمام التحويل بنجاح، يرجى كتابة رقم محفظتك وكود العملية في الخانات أدناه لتأكيد شحنتك فوراً.</li>
+          </ol>
+
+          <div class="vodafone-inputs-wrap">
+            <div class="checkout-field">
+              <label class="checkout-label">رقم المحفظة التي قمت بالتحويل منها:</label>
+              <input type="tel" id="vfSenderPhone" class="checkout-input" placeholder="010xxxxxxxx">
+            </div>
+
+            <div class="checkout-field">
+              <label class="checkout-label">رقم العملية أو كود الإشعار (Transaction ID):</label>
+              <input type="text" id="vfTransactionId" class="checkout-input" placeholder="مثال: VF-894102">
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-checkout" style="background: var(--vodafone-red); margin-top: 0.5rem; padding: 15px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          <span>تأكيد الطلب وإرسال للمراجعة</span>
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- =================================================================
+       ORDER SUCCESS MODAL (إشعار نجاح الطلب والتأكيد)
+       ================================================================= -->
+  <div id="orderSuccessModal" class="order-success-modal" onclick="if(event.target === this) closeOrderSuccessModal()">
+    <div class="order-success-card">
+      <div class="order-success-icon vodafone-icon">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+
+      <h3 style="font-family: var(--font-serif); font-size: 1.8rem; font-weight: 600;">تم استلام طلبك بنجاح!</h3>
+      
+      <p id="successOrderNote" style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
+        شكراً لتسوقك من ميزون إيبيور. سيتم فحص ومطابقة تحويل فودافون كاش وتجهيز شحنتك فوراً.
+      </p>
+
+      <div style="background: var(--bg-subtle); padding: 14px 20px; border-radius: var(--radius-xs); width: 100%; text-align: right; display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem;">
+        <div>رقم الطلب: <strong id="successOrderId" style="font-family: monospace; color: var(--text-primary);">#EPU-9415</strong></div>
+        <div>المبلغ المسدد: <strong id="successOrderAmount" style="color: var(--accent-terracotta);">43,500 ج.م</strong></div>
+        <div>طريقة الدفع: <span id="successOrderMethod" style="font-weight: 600;">فودافون كاش</span></div>
+      </div>
+
+      <div style="display: flex; gap: 10px; width: 100%; margin-top: 0.5rem;">
+        <button class="btn-primary" style="flex: 1;" onclick="closeOrderSuccessModal(); showDashboard();">
+          مشاهدة الطلب في لوحة التحكم
+        </button>
+        <button class="btn-secondary" style="flex: 1; color: var(--text-primary); border-color: var(--border-strong);" onclick="closeOrderSuccessModal()">
+          متابعة التسوق
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================================================================
+       ADD PRODUCT MODAL (إضافة منتج جديد للوحة التحكم)
+       ================================================================= -->
+  <div id="addProductModal" class="checkout-modal" onclick="if(event.target === this) closeAddProductModal()">
+    <div class="checkout-card" style="max-width: 600px;">
+      <div class="checkout-card-header">
+        <h3 class="checkout-card-title">إضافة قطعة جديدة للأرشيف</h3>
+        <button class="drawer-close" onclick="closeAddProductModal()" aria-label="إغلاق">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form onsubmit="handleAddProductSubmit(event)" style="padding: 1.75rem; display: flex; flex-direction: column; gap: 1rem;">
+        <div class="checkout-field">
+          <label class="checkout-label">اسم القطعة (بالعربية):</label>
+          <input type="text" id="newProdNameAr" class="checkout-input" placeholder="مثال: بليزر كتان بلجيكي خفيف" required>
+        </div>
+
+        <div class="checkout-field">
+          <label class="checkout-label">اسم القطعة (بالإنجليزية):</label>
+          <input type="text" id="newProdNameEn" class="checkout-input" placeholder="e.g. Belgian Linen Summer Blazer" required>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="checkout-field">
+            <label class="checkout-label">التصنيف:</label>
+            <select id="newProdCategory" class="checkout-input">
+              <option value="outerwear">معاطف وسترات (Outerwear)</option>
+              <option value="essentials">أساسيات فاخرة (Essentials)</option>
+              <option value="knitwear">تريكو وصوف (Knitwear)</option>
+              <option value="trousers">بناطيل (Trousers)</option>
+              <option value="accessories">إكسسوارات وجلديات (Accessories)</option>
+            </select>
+          </div>
+
+          <div class="checkout-field">
+            <label class="checkout-label">السعر (بالدولار التقديري أو ج.م):</label>
+            <input type="number" id="newProdPrice" class="checkout-input" placeholder="320" required>
+          </div>
+        </div>
+
+        <div class="checkout-field">
+          <label class="checkout-label">رابط صورة القطعة (Unsplash أو رابط مباشر):</label>
+          <input type="url" id="newProdImg" class="checkout-input" placeholder="https://images.unsplash.com/photo-..." required>
+        </div>
+
+        <button type="submit" class="btn-primary" style="margin-top: 0.5rem; padding: 12px;">نشر القطعة بالمتجر</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- =================================================================
+       QUICK VIEW MODAL
+       ================================================================= -->
+  <div id="quickviewModal" class="modal-overlay" onclick="if(event.target === this) closeQuickView()">
+    <div class="quickview-card">
+      <button class="quickview-close" onclick="closeQuickView()" aria-label="إغلاق">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div id="quickviewContent" style="display: contents;">
+        <!-- Populated via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- =================================================================
+       SEARCH OVERLAY MODAL
+       ================================================================= -->
+  <div id="searchModal" class="search-modal">
+    <div class="search-modal-header">
+      <span class="logo-brand" style="font-size: 1.4rem;" data-i18n="brandName">ميزون إيبيور</span>
+      <button class="drawer-close" onclick="closeSearch()" aria-label="إغلاق البحث">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="search-input-wrap">
+      <input type="text" id="searchQueryInput" class="search-main-input" placeholder="ابحث عن معطف، بنطال، كشمير، حرير..." data-i18n-placeholder="searchPlaceholder" autocomplete="off">
+    </div>
+
+    <div id="searchResultsWrap" class="search-results-area">
+      <!-- Search suggestions / Live results populated via app.js -->
+    </div>
+  </div>
+
+  <!-- Toast Notification Feedback -->
+  <div id="toastNotice" class="toast-notice">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    <span class="toast-text">تمت الإضافة للحقيبة</span>
+  </div>
+
+  <!-- Mobile Navigation Helper Script -->
+  <script>
+    function toggleMobileNav() {
+      showToast('تصفح أقسام الأتيليه');
+      const cats = document.getElementById('categories');
+      if (cats) cats.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function openWishlistDrawer() {
+      if (state.wishlist.length === 0) {
+        showToast('قائمة الرغبات فارغة حالياً');
+      } else {
+        showToast(`لديك ${state.wishlist.length} قطعة محفوظة في قائمة الرغبات`);
+        document.getElementById('trending')?.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  </script>
+
+  <!-- Main Application Script -->
+  <script src="app.js"></script>
+
+</body>
+</html>
